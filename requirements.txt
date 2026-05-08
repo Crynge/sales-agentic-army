@@ -30,7 +30,7 @@ pgvector>=0.2.4
 ray[default,rllib,tune]>=2.9.0
 torch>=2.1.0
 transformers>=4.37.0
-scikit-learn>=1.4.0
+scikit-learn>=1.8.0
 numpy>=1.26.0
 pandas>=2.2.0
 

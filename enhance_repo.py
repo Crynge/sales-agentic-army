@@ -1,4 +1,25 @@
+#!/usr/bin/env python3
 """
+Repository Enhancement Script
+Adds enterprise-grade components to sales-agentic-army repo
+"""
+
+import os
+import json
+from pathlib import Path
+
+BASE_DIR = Path("/workspace/sales-agentic-army")
+
+def create_file(path: str, content: str):
+    """Create a file with content"""
+    full_path = BASE_DIR / path
+    full_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(full_path, 'w') as f:
+        f.write(content)
+    print(f"✅ Created: {path}")
+
+# Create EmailCrafter agent
+create_file("src/agents/email_crafter.py", '''"""
 EmailCrafter Agent - AI-powered personalized email generation
 Creates high-converting outreach emails with A/B testing capabilities
 """
@@ -270,7 +291,7 @@ Best regards,
             "Rated 4.9/5 on G2.",
         ]
         
-        body = f"{openings[0]}\n\n{value_props[0]}\n\n{socal_proof[0]}"
+        body = f"{openings[0]}\\n\\n{value_props[0]}\\n\\n{socal_proof[0]}"
         return body
     
     def _generate_cta(self, goal: str) -> str:
@@ -331,3 +352,7 @@ Best regards,
     def _add_curiosity(self, text: str) -> str:
         """Add curiosity element"""
         return f"You won't believe this... {text}"
+''')
+
+print("\n🎉 Repository enhancement complete!")
+print("Files created successfully.")

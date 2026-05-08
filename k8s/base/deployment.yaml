@@ -1,0 +1,153 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: agent-orchestrator
+  labels:
+    app: sales-agentic-army
+    component: orchestrator
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: sales-agentic-army
+      component: orchestrator
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: sales-agentic-army
+        component: orchestrator
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: sales-agentic-army
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      containers:
+      - name: orchestrator
+        image: sales-agentic-army:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+          name: http
+          protocol: TCP
+        env:
+        - name: REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: sales-agentic-army-secrets
+              key: redis-url
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: sales-agentic-army-secrets
+              key: database-url
+        - name: KAFKA_BOOTSTRAP_SERVERS
+          value: "kafka-headless:9092"
+        - name: LOG_LEVEL
+          value: "INFO"
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: "http://otel-collector:4317"
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "512Mi"
+          limits:
+            cpu: "2000m"
+            memory: "2Gi"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: agent-worker
+  labels:
+    app: sales-agentic-army
+    component: worker
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      app: sales-agentic-army
+      component: worker
+  template:
+    metadata:
+      labels:
+        app: sales-agentic-army
+        component: worker
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8001"
+    spec:
+      serviceAccountName: sales-agentic-army
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      containers:
+      - name: worker
+        image: sales-agentic-army:latest
+        imagePullPolicy: Always
+        command: ["python", "-m", "src.workers.main"]
+        env:
+        - name: REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: sales-agentic-army-secrets
+              key: redis-url
+        - name: KAFKA_BOOTSTRAP_SERVERS
+          value: "kafka-headless:9092"
+        - name: WORKER_CONCURRENCY
+          value: "10"
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: "http://otel-collector:4317"
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "256Mi"
+          limits:
+            cpu: "1000m"
+            memory: "1Gi"
+        livenessProbe:
+          exec:
+            command:
+            - pgrep
+            - -f
+            - worker
+          initialDelaySeconds: 60
+          periodSeconds: 60
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL

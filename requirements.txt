@@ -15,7 +15,7 @@ aiohttp>=3.9.0
 
 # Message Brokers & Task Queues
 celery>=5.3.0
-kombu>=5.3.0
+kombu>=5.6.2
 redis>=5.0.0
 kafka-python>=2.0.2
 confluent-kafka>=2.3.0

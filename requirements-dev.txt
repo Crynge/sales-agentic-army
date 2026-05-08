@@ -11,7 +11,7 @@ faker>=22.0.0
 
 # Linting & Formatting
 black>=24.1.0
-isort>=5.13.0
+isort>=8.0.1
 flake8>=7.0.0
 flake8-docstrings>=1.7.0
 mypy>=1.8.0

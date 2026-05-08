@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using these metadata."
+type: software
+title: "Sales Agentic Army Framework"
+abstract: "Production-grade multi-agent orchestration framework for autonomous sales at scale"
+authors:
+  - family-names: "Contributors"
+    given-names: "Sales Agentic Army"
+    orcid: "https://orcid.org/0000-0000-0000-0000"
+repository-code: "https://github.com/sales-agentic-army/sales-agentic-army"
+version: 1.0.0
+doi: "10.5281/zenodo.xxxxxxx"
+date-released: 2025-01-15
+license: MIT
+keywords:
+  - "ai-agents"
+  - "sales-automation"
+  - "multi-agent-systems"
+  - "machine-learning"
+  - "kubernetes"

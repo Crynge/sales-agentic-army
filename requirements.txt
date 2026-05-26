@@ -28,7 +28,7 @@ pgvector>=0.2.4
 
 # Machine Learning & RL
 ray[default,rllib,tune]>=2.9.0
-torch>=2.1.0
+torch>=2.11.0
 transformers>=4.37.0
 scikit-learn>=1.4.0
 numpy>=1.26.0
